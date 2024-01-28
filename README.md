@@ -2,7 +2,7 @@
 
 ## about
 
-oss layer for my personal server.
+file storage layer for my personal server.
 
 ## installation
 
@@ -10,8 +10,8 @@ oss layer for my personal server.
 
 ## configs
 
-1. lapa_file_store\data\config.ini 
-2. lapa_logger\data\config.ini
+1. lapa_file_store\data\config.ini
+2. square_logger\data\config.ini
 
 ## env
 
@@ -19,6 +19,17 @@ oss layer for my personal server.
 
 ## changelog
 
+### v0.0.2
+
+- change default port to 10100.
+- change default LOCAL_STORAGE_PATH to be relative and LOCAL_STORAGE_PATH.
+- move logger to configuration.py.
+- fix dependencies in setup.py.
+- minor optimisations.
+- add validation for LOCAL_STORAGE_PATH in config.ini.
+- fix logic for upload_file.
+- fix logic for download_file.
+
 ### v0.0.1
 
--Base version"# lapa_file_store" 
+- Base version

@@ -1,25 +1,20 @@
 import mimetypes
 import os
 import uuid
-from datetime import datetime, timezone
 
-from fastapi import FastAPI, status, UploadFile
+from fastapi import FastAPI, UploadFile, status
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.responses import JSONResponse
-from square_logger.main import SquareLogger
+from fastapi.responses import FileResponse, JSONResponse
 from uvicorn import run
 
 from lapa_file_store.configuration import (
     config_int_host_port,
     config_str_host_ip,
-    config_str_log_file_name,
-    config_str_oss_folder_path
+    global_absolute_path_local_storage,
+    global_object_square_logger,
 )
-from lapa_file_store.utils.Helper import create_entry_in_file_store, download_file
-
-local_object_square_logger = SquareLogger(config_str_log_file_name)
+from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row
 
 app = FastAPI()
 
@@ -32,33 +27,44 @@ app.add_middleware(
 
 
 @app.post("/upload_file", status_code=status.HTTP_201_CREATED)
-@local_object_square_logger.async_auto_logger
-async def upload_file(file: UploadFile):
+@global_object_square_logger.async_auto_logger
+async def upload_file(
+    file: UploadFile,
+    file_purpose: str | None = None,
+    system_relative_path: str = "others/misc",
+):
     try:
         file_bytes = await file.read()
         filename = file.filename
         content_type = file.content_type
 
-        current_time_utc = str(datetime.now(timezone.utc))
-
-        generated_uuid = uuid.uuid4()
-
-        response = create_entry_in_file_store(filename, content_type, current_time_utc, generated_uuid)
-
-        file_id = response[0]["file_id"]
+        file_storage_token = str(uuid.uuid4())
+        system_file_name = str(uuid.uuid4())
+        file_extension = filename.rsplit(".", 1)[-1]
+        system_file_name_with_extension = system_file_name + "." + file_extension
+        response = create_entry_in_file_store(
+            file_name_with_extention=filename,
+            content_type=content_type,
+            file_storage_token=file_storage_token,
+            file_purpose=file_purpose,
+            system_relative_path=system_relative_path,
+            system_file_name_with_extension=system_file_name_with_extension,
+        )
 
         # create folder
-        folder_path = os.path.join(config_str_oss_folder_path, str(file_id))
-        os.makedirs(folder_path)
-        filepath = os.path.join(config_str_oss_folder_path, str(file_id), filename)
-        with open(filepath, 'wb') as file:
+        system_absolute_path = os.path.join(
+            global_absolute_path_local_storage,
+            os.sep.join(system_relative_path.split("/")),
+        )
+        os.makedirs(system_absolute_path)
+        system_file_absolute_path = os.path.join(
+            system_absolute_path, system_file_name_with_extension
+        )
+        with open(system_file_absolute_path, "wb") as file:
             file.write(file_bytes)
 
         # Check if the file exists
-        if os.path.exists(filepath):
-            # Create FileResponse
-            # file_response = FileResponse(filepath, media_type=content_type, filename=filename)
-
+        if os.path.exists(system_file_absolute_path):
             # Additional information you want to include
             additional_info = {"FileStorageToken": response[0]["file_storage_token"]}
 
@@ -69,33 +75,44 @@ async def upload_file(file: UploadFile):
             # Handle the case when the file does not exist
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
-@app.post("/downlaod_file", status_code=status.HTTP_201_CREATED)
-@local_object_square_logger.async_auto_logger
-async def downlaod_file(file_storage_token: str):
+@app.post("/download_file", status_code=status.HTTP_201_CREATED)
+@global_object_square_logger.async_auto_logger
+async def download_file(file_storage_token: str):
     try:
-
-        file_path = download_file(file_storage_token)
-
+        local_dict_file_row = get_file_row(file_storage_token)
+        local_string_system_absolute_file_path = os.path.join(
+            global_absolute_path_local_storage,
+            os.sep.join(local_dict_file_row["file_system_relative_path"].split("/")),
+            local_dict_file_row["file_system_file_name_with_extension"],
+        )
         # Get content type
-        content_type, encoding = mimetypes.guess_type(file_path)
+        content_type, _ = mimetypes.guess_type(local_string_system_absolute_file_path)
 
-        # Get filename
-        filename = os.path.basename(file_path)
-
-        if file_path:
-            return FileResponse(file_path, media_type=content_type, filename=filename)
+        if local_string_system_absolute_file_path:
+            return FileResponse(
+                local_string_system_absolute_file_path,
+                media_type=content_type,
+                filename=local_dict_file_row["file_name_with_extension"],
+            )
         else:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
-
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+            )
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 if __name__ == "__main__":
     try:
         run(app, host=config_str_host_ip, port=config_int_host_port)
     except Exception as exc:
-        local_object_square_logger.logger.critical(exc, exc_info=True)
+        global_object_square_logger.logger.critical(exc, exc_info=True)
