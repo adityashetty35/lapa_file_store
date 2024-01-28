@@ -2,7 +2,7 @@
 
 ## about
 
-oss layer for my personal server.
+file storage layer for my personal server.
 
 ## installation
 
@@ -10,8 +10,8 @@ oss layer for my personal server.
 
 ## configs
 
-1. lapa_file_store\data\config.ini 
-2. lapa_logger\data\config.ini
+1. lapa_file_store\data\config.ini
+2. square_logger\data\config.ini
 
 ## env
 
@@ -21,4 +21,4 @@ oss layer for my personal server.
 
 ### v0.0.1
 
--Base version"# lapa_file_store" 
+- Base version
