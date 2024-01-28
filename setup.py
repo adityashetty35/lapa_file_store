@@ -4,7 +4,7 @@ package_name = "lapa_file_store"
 
 setup(
     name=package_name,
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     package_data={
         package_name: ["data/*", "pydantic_models/*"],
@@ -17,8 +17,8 @@ setup(
         "pydantic>=2.5.3",
         "lapa_database_helper>=0.0.3",
     ],
-    author="Aaditya sangishetty",
-    author_email="adityashetty35@gmail.com",
+    author="Aaditya sangishetty, thePmSquare",
+    author_email="adityashetty35@gmail.com, thepmsquare@gmail.com",
     description="file storage layer for my personal server.",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
