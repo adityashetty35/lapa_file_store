@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 package_name = "lapa_file_store"
 
@@ -10,16 +10,16 @@ setup(
         package_name: ["data/*", "pydantic_models/*"],
     },
     install_requires=[
-        "sqlalchemy>=2.0.23",
-        "psycopg2-binary>=2.9.9",
         "uvicorn>=0.24.0.post1",
         "fastapi>=0.104.1",
         "python-multipart>=0.0.6",
-        "square_logger~=1.0"
+        "square_logger~=1.0",
+        "pydantic>=2.5.3",
+        "lapa_database_helper>=0.0.3",
     ],
     author="Aaditya sangishetty",
     author_email="adityashetty35@gmail.com",
-    description="oss layer ",
+    description="file storage layer for my personal server.",
     long_description=open("README.md", "r").read(),
     long_description_content_type="text/markdown",
     url=f"https://github.com/adityashetty35/{package_name}",
