@@ -14,7 +14,7 @@ from lapa_file_store.configuration import (
     global_absolute_path_local_storage,
     global_object_square_logger,
 )
-from lapa_file_store.utils.Helper import create_entry_in_file_store, download_file
+from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row
 
 app = FastAPI()
 
@@ -72,6 +72,7 @@ async def upload_file(
             return JSONResponse(content={"additional_info": additional_info})
 
         else:
+            # Handle the case when the file does not exist
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
         raise HTTPException(
@@ -81,23 +82,29 @@ async def upload_file(
 
 @app.post("/download_file", status_code=status.HTTP_201_CREATED)
 @global_object_square_logger.async_auto_logger
-async def download_file_route(file_storage_token: str):
+async def download_file(file_storage_token: str):
     try:
-        file_path = download_file(file_storage_token)
-
+        local_dict_file_row = get_file_row(file_storage_token)
+        local_string_system_absolute_file_path = os.path.join(
+            global_absolute_path_local_storage,
+            os.sep.join(local_dict_file_row["file_system_relative_path"].split("/")),
+            local_dict_file_row["file_system_file_name_with_extension"],
+        )
         # Get content type
-        content_type, _ = mimetypes.guess_type(file_path)
+        content_type, _ = mimetypes.guess_type(local_string_system_absolute_file_path)
 
-        # Get filename
-        filename = os.path.basename(file_path)
-
-        if file_path:
-            return FileResponse(file_path, media_type=content_type, filename=filename)
+        if local_string_system_absolute_file_path:
+            return FileResponse(
+                local_string_system_absolute_file_path,
+                media_type=content_type,
+                filename=local_dict_file_row["file_name_with_extension"],
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
             )
-
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
