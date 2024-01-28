@@ -2,16 +2,18 @@ import os.path
 
 from lapa_database_helper.main import LAPADatabaseHelper
 
-from lapa_file_store.configuration import config_str_oss_folder_path
+from lapa_file_store.configuration import global_absolute_path_local_storage
 
 local_object_lapa_database_helper = LAPADatabaseHelper()
 
 
 def create_entry_in_file_store(
     file_name_with_extention: str,
-    file_extention: str,
-    curr_timestamp,
-    generated_uuid: str,
+    content_type: str,
+    system_file_name_with_extension: str,
+    file_storage_token: str,
+    file_purpose: str,
+    system_relative_path: str,
 ):
     try:
         database_name = "file_storage"
@@ -21,15 +23,11 @@ def create_entry_in_file_store(
         data = [
             {
                 "file_name_with_extension": file_name_with_extention,
-                "file_extension": file_extention,
-                "file_date_created": curr_timestamp,
-                "file_last_modified": curr_timestamp,
-                "file_system_file_name_with_extension": "",
-                "file_system_relative_path": "/" + file_name_with_extention,
-                "file_storage_token": str(generated_uuid),
-                "file_purpose": "",
-                "file_is_deleted": False,
-                "file_date_deleted": curr_timestamp,
+                "file_content_type": content_type,
+                "file_system_file_name_with_extension": system_file_name_with_extension,
+                "file_system_relative_path": system_relative_path,
+                "file_storage_token": file_storage_token,
+                "file_purpose": file_purpose,
             }
         ]
 
