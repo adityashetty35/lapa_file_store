@@ -2,10 +2,16 @@ import configparser
 import os
 import sys
 
+from square_logger.main import SquareLogger
+
 try:
     config = configparser.ConfigParser()
     config_file_path = (
-            os.path.dirname(os.path.abspath(__file__)) + os.sep + "data" + os.sep + "config.ini"
+        os.path.dirname(os.path.abspath(__file__))
+        + os.sep
+        + "data"
+        + os.sep
+        + "config.ini"
     )
     config.read(config_file_path)
 
@@ -15,9 +21,11 @@ try:
 
     config_str_log_file_name = config.get("ENVIRONMENT", "LOG_FILE_NAME")
     config_str_oss_folder_path = config.get("ENVIRONMENT", "LOCAL_STORAGE_PATH")
-
+    # initialize logger
+    global_object_square_logger = SquareLogger(config_str_log_file_name)
 except Exception as e:
     print(
-        "\033[91mMissing or incorrect config.ini file, have you tried creating it from config.example.ini?\n"
-        "Error details: " + str(e) + "\033[0m")
+        "\033[91mMissing or incorrect config.ini file.\n"
+        "Error details: " + str(e) + "\033[0m"
+    )
     sys.exit()
