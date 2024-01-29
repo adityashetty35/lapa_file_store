@@ -26,6 +26,14 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+@global_object_square_logger.async_auto_logger
+async def root():
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"text": config_str_module_name}
+    )
+
+
 @app.post("/upload_file", status_code=status.HTTP_201_CREATED)
 @global_object_square_logger.async_auto_logger
 async def upload_file(
