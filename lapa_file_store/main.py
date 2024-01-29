@@ -104,7 +104,7 @@ async def upload_file(
         )
 
 
-@app.post("/download_file", status_code=status.HTTP_201_CREATED)
+@app.get("/download_file", status_code=status.HTTP_201_CREATED)
 @global_object_square_logger.async_auto_logger
 async def download_file(file_storage_token: str):
     try:
