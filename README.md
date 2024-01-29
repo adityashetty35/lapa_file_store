@@ -19,6 +19,16 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.3
+
+- MODULE_NAME added in the GENERAL configuration.
+- / root endpoint added.
+- Form data and description added for /upload_file endpoint for the below params.
+    - file_purpose
+    - system_relative_path
+- Validation added while creating the directory in /upload_file endpoint.
+- /download_file endpoint changed from POST to GET.
+
 ### v0.0.2
 
 - change default port to 10100.
