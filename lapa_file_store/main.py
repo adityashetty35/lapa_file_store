@@ -1,8 +1,9 @@
 import mimetypes
 import os
 import uuid
+from typing import Annotated
 
-from fastapi import FastAPI, UploadFile, status
+from fastapi import FastAPI, UploadFile, status, Form
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -13,6 +14,7 @@ from lapa_file_store.configuration import (
     config_str_host_ip,
     global_absolute_path_local_storage,
     global_object_square_logger,
+    config_str_module_name
 )
 from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row
 
@@ -37,9 +39,10 @@ async def root():
 @app.post("/upload_file", status_code=status.HTTP_201_CREATED)
 @global_object_square_logger.async_auto_logger
 async def upload_file(
-    file: UploadFile,
-    file_purpose: str | None = None,
-    system_relative_path: str = "others/misc",
+        file: UploadFile,
+        file_purpose: Annotated[str, Form(title="Username", description="Specify the purpose of the file")] = None,
+        system_relative_path: Annotated[str, Form(title="System relative path",
+                                                  description="Specify the path using '/'. For e.g. home/user_document")] = "others/misc"
 ):
     try:
         file_bytes = await file.read()
