@@ -67,7 +67,20 @@ async def upload_file(
             global_absolute_path_local_storage,
             os.sep.join(system_relative_path.split("/")),
         )
-        os.makedirs(system_absolute_path)
+
+        """
+        Check if the path already exists or not
+        If Yes --> Do not create directory in the OS
+        If No --> Create directory in the OS
+        """
+        if os.path.exists(system_absolute_path):
+            global_object_square_logger.logger.warning('Directory path already exists. Not creating the path again. '
+                                                       f'Path - {str(system_absolute_path)}')
+        else:
+            os.makedirs(system_absolute_path)
+            global_object_square_logger.logger.info('Directory created successfully. '
+                                                    f'Path - {str(system_absolute_path)}')
+
         system_file_absolute_path = os.path.join(
             system_absolute_path, system_file_name_with_extension
         )
