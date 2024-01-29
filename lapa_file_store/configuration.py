@@ -16,6 +16,8 @@ try:
     config.read(config_file_path)
 
     # get all vars and typecast
+    config_str_module_name = config.get("GENERAL", "MODULE_NAME")
+
     config_str_host_ip = config.get("ENVIRONMENT", "HOST_IP")
     config_int_host_port = int(config.get("ENVIRONMENT", "HOST_PORT"))
 
