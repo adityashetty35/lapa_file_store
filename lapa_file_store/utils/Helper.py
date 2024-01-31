@@ -49,7 +49,11 @@ def get_file_row(file_storage_token):
         filters = {"file_storage_token": file_storage_token}
 
         response = local_object_lapa_database_helper.get_rows(
-            filters, database_name, schema_name, table_name
+            filters,
+            database_name,
+            schema_name,
+            table_name,
+            ignore_filters_and_get_all=False,
         )
         if isinstance(response, list) and len(response) == 1 and response[0]:
             return response[0]
