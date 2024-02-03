@@ -19,6 +19,10 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.5
+
+- use lapa_commons to read config.
+
 ### v0.0.4
 
 - Bug Fix in /download_file because of ignore_filters_and_get_all.
@@ -28,8 +32,8 @@ file storage layer for my personal server.
 - MODULE_NAME added in the GENERAL configuration.
 - / root endpoint added.
 - Form data and description added for /upload_file endpoint for the below params.
-  - file_purpose
-  - system_relative_path
+    - file_purpose
+    - system_relative_path
 - Validation added while creating the directory in /upload_file endpoint.
 - /download_file endpoint changed from POST to GET.
 
