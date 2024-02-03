@@ -4,7 +4,7 @@ package_name = "lapa_file_store"
 
 setup(
     name=package_name,
-    version="0.0.4",
+    version="0.0.5",
     packages=find_packages(),
     package_data={
         package_name: ["data/*", "pydantic_models/*"],
@@ -16,6 +16,7 @@ setup(
         "square_logger~=1.0",
         "pydantic>=2.5.3",
         "lapa_database_helper>=0.0.3",
+        "lapa_commons>=0.0.1",
     ],
     author="Aaditya sangishetty, thePmSquare",
     author_email="adityashetty35@gmail.com, thepmsquare@gmail.com",
