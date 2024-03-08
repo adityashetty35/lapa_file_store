@@ -19,6 +19,10 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.6
+
+- read database configuration from config using enums from lapa database structure.
+
 ### v0.0.5
 
 - use lapa_commons to read config.
