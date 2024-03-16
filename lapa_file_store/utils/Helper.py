@@ -2,18 +2,19 @@ from fastapi import status
 from fastapi.exceptions import HTTPException
 from lapa_database_helper.main import LAPADatabaseHelper
 
-from lapa_file_store.configuration import global_object_square_logger, config_str_config_str_database_name, config_str_config_str_schema_name, config_str_file_table_name
+from lapa_file_store.configuration import global_object_square_logger, config_str_database_name, config_str_schema_name, \
+    config_str_file_table_name
 
 local_object_lapa_database_helper = LAPADatabaseHelper()
 
 
 def create_entry_in_file_store(
-    file_name_with_extention: str,
-    content_type: str,
-    system_file_name_with_extension: str,
-    file_storage_token: str,
-    file_purpose: str,
-    system_relative_path: str,
+        file_name_with_extention: str,
+        content_type: str,
+        system_file_name_with_extension: str,
+        file_storage_token: str,
+        file_purpose: str,
+        system_relative_path: str,
 ):
     try:
 
@@ -39,7 +40,6 @@ def create_entry_in_file_store(
 
 def get_file_row(file_storage_token):
     try:
-     
 
         filters = {"file_storage_token": file_storage_token}
 
