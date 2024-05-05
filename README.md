@@ -19,6 +19,10 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.9
+
+- Added /delete_file endpoint.
+
 ### v0.0.8
 
 - update import logic from lapa_database_structure.

@@ -1,7 +1,7 @@
 import mimetypes
 import os
 import uuid
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import FastAPI, UploadFile, status, Form
 from fastapi.exceptions import HTTPException
@@ -16,7 +16,7 @@ from lapa_file_store.configuration import (
     global_object_square_logger,
     config_str_module_name
 )
-from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row
+from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row, edit_file_delete_status
 
 app = FastAPI()
 
@@ -114,10 +114,12 @@ async def download_file(file_storage_token: str):
             os.sep.join(local_dict_file_row["file_system_relative_path"].split("/")),
             local_dict_file_row["file_system_file_name_with_extension"],
         )
-        # Get content type
-        content_type, _ = mimetypes.guess_type(local_string_system_absolute_file_path)
 
-        if local_string_system_absolute_file_path:
+        # check file is deleted
+        if not local_dict_file_row["file_is_deleted"] and local_string_system_absolute_file_path:
+            # Get content type
+            content_type, _ = mimetypes.guess_type(local_string_system_absolute_file_path)
+
             return FileResponse(
                 local_string_system_absolute_file_path,
                 media_type=content_type,
@@ -127,6 +129,42 @@ async def download_file(file_storage_token: str):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
             )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
+
+@app.delete("/delete_file", status_code=status.HTTP_200_OK)
+@global_object_square_logger.async_auto_logger
+async def delete_file(list_file_storage_token: List[str]):
+    deleted_file_storage_token = []
+    try:
+        for file_storage_token in list_file_storage_token:
+            # get file path
+            local_dict_file_row = get_file_row(file_storage_token)
+            local_string_system_absolute_file_path = os.path.join(
+                global_absolute_path_local_storage,
+                os.sep.join(local_dict_file_row["file_system_relative_path"].split("/")),
+                local_dict_file_row["file_system_file_name_with_extension"],
+            )
+
+            # delete file
+            if os.path.exists(local_string_system_absolute_file_path):
+                os.remove(local_string_system_absolute_file_path)
+
+            # update file deleted status and timestamp
+            update_status_response = edit_file_delete_status(file_storage_token)
+
+            deleted_file_storage_token.append(file_storage_token)
+
+        # Additional information you want to include
+        additional_info = {"DeletedFileStorageToken": deleted_file_storage_token}
+
+        # Return JSONResponse additional information
+        return JSONResponse(content={"additional_info": additional_info})
     except HTTPException:
         raise
     except Exception as e:
