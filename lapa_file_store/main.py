@@ -3,7 +3,7 @@ import os
 import uuid
 from typing import Annotated, List
 
-from fastapi import FastAPI, UploadFile, status, Form
+from fastapi import FastAPI, UploadFile, status, Form, Query
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -139,7 +139,7 @@ async def download_file(file_storage_token: str):
 
 @app.delete("/delete_file", status_code=status.HTTP_200_OK)
 @global_object_square_logger.async_auto_logger
-async def delete_file(list_file_storage_token: List[str]):
+async def delete_file(list_file_storage_token: List[str] = Query()):
     deleted_file_storage_token = []
     try:
         for file_storage_token in list_file_storage_token:
