@@ -19,6 +19,12 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.9
+
+- add SQUARE_LOGGER and LAPA_DATABASE_HELPER sections in config and initialise sdks using these variables.
+- update min version of lapa_commons.
+- keep square_logger and lapa_database_structure as >= instead of ~=.
+
 ### v0.0.8
 
 - update import logic from lapa_database_structure.
