@@ -19,11 +19,19 @@ file storage layer for my personal server.
 
 ## changelog
 
-### v0.0.9
+### v0.0.11
 
 - add SQUARE_LOGGER and LAPA_DATABASE_HELPER sections in config and initialise sdks using these variables.
 - update min version of lapa_commons.
 - keep square_logger and lapa_database_structure as >= instead of ~=.
+
+### v0.0.10
+
+- Bug fix /delete_file endpoint because of input list as query param.
+
+### v0.0.9
+
+- Added /delete_file endpoint.
 
 ### v0.0.8
 
@@ -50,8 +58,8 @@ file storage layer for my personal server.
 - MODULE_NAME added in the GENERAL configuration.
 - / root endpoint added.
 - Form data and description added for /upload_file endpoint for the below params.
-    - file_purpose
-    - system_relative_path
+  - file_purpose
+  - system_relative_path
 - Validation added while creating the directory in /upload_file endpoint.
 - /download_file endpoint changed from POST to GET.
 

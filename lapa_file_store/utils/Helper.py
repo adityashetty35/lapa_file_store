@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from lapa_database_helper.main import LAPADatabaseHelper
@@ -83,5 +85,52 @@ def get_file_row(file_storage_token):
                 detail=f"incorrect file_storage_token:{file_storage_token}",
             )
 
+    except Exception as e:
+        raise e
+
+
+def edit_file_delete_status(file_storage_token):
+    try:
+        filters = {File.file_storage_token.name: file_storage_token}
+
+        # Get the current timestamp
+        timestamp = datetime.now(timezone.utc)
+        formatted_timestamp = timestamp.strftime("%Y-%m-%d %H:%M:%S.%f+00")
+
+        data = {File.file_is_deleted.name: True, File.file_date_deleted.name: formatted_timestamp}
+
+        response = local_object_lapa_database_helper.edit_rows(
+            filters=filters,
+            data=data,
+            database_name=local_string_database_name,
+            schema_name=local_string_schema_name,
+            table_name=File.__tablename__,
+            ignore_filters_and_edit_all=False
+        )
+
+        if isinstance(response, list) and len(response) == 1 and response[0]:
+            file_data = response[0]
+            if File.file_storage_token.name in file_data and file_data[
+                File.file_storage_token.name] == file_storage_token:
+                return file_data
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"incorrect file_storage_token:{file_storage_token}",
+                )
+        elif len(response) > 1:
+            global_object_square_logger.logger.warning(
+                f"Multiple files with same file_storage_token: {file_storage_token}"
+            )
+
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"incorrect file_storage_token:{file_storage_token}",
+            )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"incorrect file_storage_token:{file_storage_token}",
+            )
     except Exception as e:
         raise e
