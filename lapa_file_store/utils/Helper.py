@@ -1,20 +1,33 @@
 from fastapi import status
 from fastapi.exceptions import HTTPException
 from lapa_database_helper.main import LAPADatabaseHelper
-from lapa_database_structure.lapa.file_storage.tables import local_string_database_name, local_string_schema_name, File
+from lapa_database_structure.lapa.file_storage.tables import (
+    local_string_database_name,
+    local_string_schema_name,
+    File,
+)
 
-from lapa_file_store.configuration import global_object_square_logger
+from lapa_file_store.configuration import (
+    global_object_square_logger,
+    config_str_lapa_database_protocol,
+    config_str_lapa_database_ip,
+    config_int_lapa_database_port,
+)
 
-local_object_lapa_database_helper = LAPADatabaseHelper()
+local_object_lapa_database_helper = LAPADatabaseHelper(
+    param_str_lapa_database_ip=config_str_lapa_database_ip,
+    param_str_lapa_database_protocol=config_str_lapa_database_protocol,
+    param_int_lapa_database_port=config_int_lapa_database_port,
+)
 
 
 def create_entry_in_file_store(
-        file_name_with_extention: str,
-        content_type: str,
-        system_file_name_with_extension: str,
-        file_storage_token: str,
-        file_purpose: str,
-        system_relative_path: str,
+    file_name_with_extention: str,
+    content_type: str,
+    system_file_name_with_extension: str,
+    file_storage_token: str,
+    file_purpose: str,
+    system_relative_path: str,
 ):
     try:
 
@@ -30,7 +43,10 @@ def create_entry_in_file_store(
         ]
 
         response = local_object_lapa_database_helper.insert_rows(
-            data, local_string_database_name, local_string_schema_name, File.__tablename__
+            data,
+            local_string_database_name,
+            local_string_schema_name,
+            File.__tablename__,
         )
 
         return response
