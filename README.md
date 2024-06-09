@@ -19,6 +19,10 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.12
+
+- Added test cases.Updated
+
 ### v0.0.11
 
 - add SQUARE_LOGGER and LAPA_DATABASE_HELPER sections in config and initialise sdks using these variables.
