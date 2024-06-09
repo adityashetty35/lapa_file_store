@@ -4,7 +4,7 @@ package_name = "lapa_file_store"
 
 setup(
     name=package_name,
-    version="0.0.11",
+    version="0.0.12",
     packages=find_packages(),
     package_data={
         package_name: ["data/*", "pydantic_models/*"],
@@ -14,6 +14,7 @@ setup(
         "fastapi>=0.104.1",
         "python-multipart>=0.0.6",
         "pydantic>=2.5.3",
+        "pytest>=8.0.0",
         "square_logger>=1.0.0",
         "lapa_database_helper>=0.0.3",
         "lapa_commons>=0.0.3",
