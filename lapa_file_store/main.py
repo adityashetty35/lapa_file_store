@@ -14,9 +14,15 @@ from lapa_file_store.configuration import (
     config_str_host_ip,
     global_absolute_path_local_storage,
     global_object_square_logger,
-    config_str_module_name
+    config_str_module_name,
+    config_str_ssl_key_file_path,
+    config_str_ssl_crt_file_path,
 )
-from lapa_file_store.utils.Helper import create_entry_in_file_store, get_file_row, edit_file_delete_status
+from lapa_file_store.utils.Helper import (
+    create_entry_in_file_store,
+    get_file_row,
+    edit_file_delete_status,
+)
 
 app = FastAPI()
 
@@ -39,10 +45,17 @@ async def root():
 @app.post("/upload_file", status_code=status.HTTP_201_CREATED)
 @global_object_square_logger.async_auto_logger
 async def upload_file(
-        file: UploadFile,
-        file_purpose: Annotated[str, Form(title="Username", description="Specify the purpose of the file")] = None,
-        system_relative_path: Annotated[str, Form(title="System relative path",
-                                                  description="Specify the path using '/'. For e.g. home/user_document")] = "others/misc"
+    file: UploadFile,
+    file_purpose: Annotated[
+        str, Form(title="Username", description="Specify the purpose of the file")
+    ] = None,
+    system_relative_path: Annotated[
+        str,
+        Form(
+            title="System relative path",
+            description="Specify the path using '/'. For e.g. home/user_document",
+        ),
+    ] = "others/misc",
 ):
     try:
         file_bytes = await file.read()
@@ -74,12 +87,15 @@ async def upload_file(
         If No --> Create directory in the OS
         """
         if os.path.exists(system_absolute_path):
-            global_object_square_logger.logger.warning('Directory path already exists. Not creating the path again. '
-                                                       f'Path - {str(system_absolute_path)}')
+            global_object_square_logger.logger.warning(
+                "Directory path already exists. Not creating the path again. "
+                f"Path - {str(system_absolute_path)}"
+            )
         else:
             os.makedirs(system_absolute_path)
-            global_object_square_logger.logger.info('Directory created successfully. '
-                                                    f'Path - {str(system_absolute_path)}')
+            global_object_square_logger.logger.info(
+                "Directory created successfully. " f"Path - {str(system_absolute_path)}"
+            )
 
         system_file_absolute_path = os.path.join(
             system_absolute_path, system_file_name_with_extension
@@ -116,9 +132,14 @@ async def download_file(file_storage_token: str):
         )
 
         # check file is deleted
-        if not local_dict_file_row["file_is_deleted"] and local_string_system_absolute_file_path:
+        if (
+            not local_dict_file_row["file_is_deleted"]
+            and local_string_system_absolute_file_path
+        ):
             # Get content type
-            content_type, _ = mimetypes.guess_type(local_string_system_absolute_file_path)
+            content_type, _ = mimetypes.guess_type(
+                local_string_system_absolute_file_path
+            )
 
             return FileResponse(
                 local_string_system_absolute_file_path,
@@ -147,7 +168,9 @@ async def delete_file(list_file_storage_token: List[str] = Query()):
             local_dict_file_row = get_file_row(file_storage_token)
             local_string_system_absolute_file_path = os.path.join(
                 global_absolute_path_local_storage,
-                os.sep.join(local_dict_file_row["file_system_relative_path"].split("/")),
+                os.sep.join(
+                    local_dict_file_row["file_system_relative_path"].split("/")
+                ),
                 local_dict_file_row["file_system_file_name_with_extension"],
             )
 
@@ -175,6 +198,21 @@ async def delete_file(list_file_storage_token: List[str] = Query()):
 
 if __name__ == "__main__":
     try:
-        run(app, host=config_str_host_ip, port=config_int_host_port)
+        if os.path.exists(config_str_ssl_key_file_path) and os.path.exists(
+            config_str_ssl_key_file_path
+        ):
+            run(
+                app,
+                host=config_str_host_ip,
+                port=config_int_host_port,
+                ssl_certfile=config_str_ssl_crt_file_path,
+                ssl_keyfile=config_str_ssl_key_file_path,
+            )
+        else:
+            run(
+                app,
+                host=config_str_host_ip,
+                port=config_int_host_port,
+            )
     except Exception as exc:
         global_object_square_logger.logger.critical(exc, exc_info=True)
