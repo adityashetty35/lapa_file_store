@@ -19,9 +19,13 @@ file storage layer for my personal server.
 
 ## changelog
 
+### v0.0.13
+
+- https support
+
 ### v0.0.12
 
-- Added test cases.Updated
+- Added test cases. Updated
 
 ### v0.0.11
 
@@ -62,8 +66,8 @@ file storage layer for my personal server.
 - MODULE_NAME added in the GENERAL configuration.
 - / root endpoint added.
 - Form data and description added for /upload_file endpoint for the below params.
-  - file_purpose
-  - system_relative_path
+    - file_purpose
+    - system_relative_path
 - Validation added while creating the directory in /upload_file endpoint.
 - /download_file endpoint changed from POST to GET.
 
